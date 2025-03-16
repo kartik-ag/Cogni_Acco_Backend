@@ -8,7 +8,7 @@ const sendEmail = async (to, name, phoneNumber, collegeName, uniqueId) => {
   try {
     // Paths for two PDFs
     const idCardPath = `./uploads/${uniqueId}_ID.pdf`;
-    const rulesPath =`./uploads/${uniqueId}_Rules.pdf`;
+    const rulesPath = `./uploads/${uniqueId}_Rules.pdf`;
 
     // Generate QR Code as base64
     const qrCodeData = await QRCode.toDataURL(uniqueId);
@@ -24,34 +24,41 @@ const sendEmail = async (to, name, phoneNumber, collegeName, uniqueId) => {
     idCardDoc.moveDown(1);
 
     // ID Card dimensions (converted to points: 1px = 0.75pt in PDF)
-    const idCardWidth = 660 * 0.75;  // 495pt
-    const idCardHeight = 667 * 0.75; // 500.25pt
+    const idCardWidth = 544 * 0.75;  // 408pt (544px * 0.75)
+    const idCardHeight = 586 * 0.75; // 439.5pt (586px * 0.75)
     const idCardX = (595.28 - idCardWidth) / 2; // Center horizontally on A4 (595.28pt width)
     const idCardY = 150;
 
     idCardDoc.lineWidth(2.5).rect(idCardX, idCardY, idCardWidth, idCardHeight).stroke();
 
-    // Photo position (left-shifted, above QR)
-    const photoX = idCardX + 20;
-    const photoY = idCardY + idCardHeight - 90;
+    // Photo position (top-left)
+    const photoX = idCardX + 20; // 20pt padding from left
+    const photoY = idCardY + 20; // 20pt padding from top
     idCardDoc.rect(photoX, photoY, 80, 80).stroke();
     idCardDoc.fontSize(10).text("Photo", photoX + 25, photoY + 35);
 
-    // Text content
-    const textStartX = idCardX + 120;
-    const textStartY = idCardY + 20;
+    // QR Code (bottom-left, below photo with some spacing)
+    const qrCodeX = photoX; // Same X as photo
+    const qrCodeY = idCardY + idCardHeight - 120; // Bottom-left, 120pt from bottom to leave space
+    idCardDoc.image(qrCodeData, qrCodeX, qrCodeY, { width: 100 });
+
+    // Text content (top-right, with equal spacing)
+    const textStartX = idCardX + idCardWidth - 230; // Right side, adjusted to fit content (trial-and-error for alignment)
+    const textStartY = idCardY + 20; // Start from top-right
+    const lineSpacing = 30; // Equal spacing between each field (professional gap)
+
     idCardDoc.fontSize(14).fill("black");
     idCardDoc.font("Helvetica-Bold").text("Name:", textStartX, textStartY);
     idCardDoc.font("Helvetica").text(name, textStartX + 80, textStartY);
-    idCardDoc.font("Helvetica-Bold").text("Email:", textStartX, textStartY + 25);
-    idCardDoc.font("Helvetica").text(to, textStartX + 80, textStartY + 25);
-    idCardDoc.font("Helvetica-Bold").text("Phone:", textStartX, textStartY + 50);
-    idCardDoc.font("Helvetica").text(phoneNumber, textStartX + 80, textStartY + 50);
-    idCardDoc.font("Helvetica-Bold").text("College:", textStartX, textStartY + 75);
-    idCardDoc.font("Helvetica").text(collegeName, textStartX + 80, textStartY + 75);
 
-    // QR Code (below photo)
-    idCardDoc.image(qrCodeData, photoX, photoY - 110, { width: 100 });
+    idCardDoc.font("Helvetica-Bold").text("Email:", textStartX, textStartY + lineSpacing);
+    idCardDoc.font("Helvetica").text(to, textStartX + 80, textStartY + lineSpacing);
+
+    idCardDoc.font("Helvetica-Bold").text("Phone:", textStartX, textStartY + 2 * lineSpacing);
+    idCardDoc.font("Helvetica").text(phoneNumber, textStartX + 80, textStartY + 2 * lineSpacing);
+
+    idCardDoc.font("Helvetica-Bold").text("College:", textStartX, textStartY + 3 * lineSpacing);
+    idCardDoc.font("Helvetica").text(collegeName, textStartX + 80, textStartY + 3 * lineSpacing);
 
     // Instructions
     const instructionX = idCardX;
@@ -62,7 +69,7 @@ const sendEmail = async (to, name, phoneNumber, collegeName, uniqueId) => {
     idCardDoc.text("• Ensure that your details match the registration.", instructionX, idCardY + idCardHeight + 90);
     idCardDoc.end();
 
-    // Second PDF: Rules and Guidelines (static content from provided document)
+    // Second PDF: Rules and Guidelines (unchanged)
     const rulesDoc = new PDFDocument({ size: "A4", margins: { top: 50, left: 50, right: 50, bottom: 50 } });
     rulesDoc.pipe(fs.createWriteStream(rulesPath));
 
