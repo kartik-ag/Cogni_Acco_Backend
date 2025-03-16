@@ -1,38 +1,37 @@
 [
   {
-    "uniqueID": "USER-1740861033667-581",
-    "email": "nikhilsinghhh11@gmail.com",
-    "name": "Nikhil Singh",
-    "collegeName": "IIT Roorkee"
-  },
-  {
-    "uniqueID": "USER-1740861038427-46",
-    "email": "test1@example.com",
-    "name": "John Doe",
-    "collegeName": "fgh"
-  },
-  {
-    "uniqueID": "USER-1740861041539-845",
-    "email": "borkar_as@es.iitr.ac.in",
-    "name": "tyu",
-    "collegeName": "tyu"
-  },
-  {
-    "uniqueID": "USER-1740861044616-18",
-    "email": "a_singh2@ce.iitr.ac.in",
-    "name": "rty",
-    "collegeName": "yu"
-  },
-  {
-    "uniqueID": "USER-1740861048182-426",
-    "email": "a_singh2@ce.iitr.ac.in",
-    "name": "rty",
-    "collegeName": "tyu"
-  },
-  {
-    "uniqueID": "USER-1740861051135-197",
-    "email": "agrawalkartik2018@gmail.com",
+    "uniqueID": "USER-1742148535702-638",
+    "phoneNumber": 22687326472,
+    "email": "agarwalkartik2018@gmail.com",
     "name": "rtyh",
     "collegeName": "rty"
+  },
+  {
+    "uniqueID": "USER-1742148541832-965",
+    "phoneNumber": 23442342344,
+    "email": "a_singh2@ce.iitr.ac.in",
+    "name": "sdfghjk",
+    "collegeName": "z.bhf"
+  },
+  {
+    "uniqueID": "USER-1742148546116-516",
+    "phoneNumber": 23492348792,
+    "email": "h_kumar@cy.iitr.ac.in",
+    "name": "sgrb",
+    "collegeName": "vgfbfsag"
+  },
+  {
+    "uniqueID": "USER-1742148549490-227",
+    "phoneNumber": 23479234872,
+    "email": "himanshukumar3004@gmail.com",
+    "name": "zvgddv",
+    "collegeName": "agwge"
+  },
+  {
+    "uniqueID": "USER-1742148553931-365",
+    "phoneNumber": 47928749872,
+    "email": "stark979316@gmail.com",
+    "name": "dgfft",
+    "collegeName": "reagegh"
   }
 ]

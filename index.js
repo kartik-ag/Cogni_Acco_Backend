@@ -137,6 +137,7 @@ mongoose.connection.once("open", () => console.log("Connected to MongoDB"));
 // Added: Define Participant schema for MongoDB
 const participantSchema = new mongoose.Schema({
   uniqueID: { type: String, required: true, unique: true },
+  phoneNumber: {type: Number, required:true, unique: true},
   email: { type: String, required: true },
   name: { type: String, required: true },
   collegeName: { type: String },
@@ -170,14 +171,14 @@ app.post("/upload-excel", upload.single("excelFile"), async (req, res) => {
     let failureCount = 0;
 
     for (const participant of participants) {
-      const { email, name, collegeName } = participant;
+      const { email, name, collegeName, phoneNumber } = participant;
       const uniqueID = `USER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       try {
-        await sendEmail(email, name, uniqueID, collegeName);
-        participantData.push({ uniqueID, email, name, collegeName });
+        await sendEmail(email, name,phoneNumber, collegeName, uniqueID);
+        participantData.push({ uniqueID, phoneNumber, email, name, collegeName });
         // Added: Save to MongoDB participants collection
-        await Participant.create({ uniqueID, email, name, collegeName });
+        await Participant.create({ uniqueID, phoneNumber, email, name, collegeName });
         successCount++;
       } catch (error) {
         console.error(`Failed to send email to ${email}:`, error);
