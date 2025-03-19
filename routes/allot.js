@@ -147,39 +147,39 @@ router.get('/user/:userId', async (req, res) => {
 // Backend route to get room details for multiple participants by email
 router.post('/participants_rooms', async (req, res) => {
   try {
-    const { emails } = req.body;
+    const { uniqueIDs } = req.body;
     
     // Validate the input
-    if (!emails || !Array.isArray(emails) || emails.length === 0) {
+    if (!uniqueIDs || !Array.isArray(uniqueIDs) || uniqueIDs.length === 0) {
       return res.status(400).json({ error: 'Valid emails array is required' });
     }
     
     const roomDetails = [];
     
     // Process each email to get room details
-    const promises = emails.map(async (email) => {
+    const promises = uniqueIDs.map(async (uniqueID) => {
       try {
-        console.log(email)
-        const participantDoc = await db.collection('Participants').doc(email).get();
+        console.log(uniqueID)
+        const participantDoc = await db.collection('Participants').doc(uniqueID).get();
         
         if (participantDoc.exists) {
           const participantData = participantDoc.data();
           roomDetails.push({
-            email,
+            uniqueID,
             bhawan_name: participantData.bhawan_name,
             room_number: participantData.room_number
           });
         } else {
           // Add participant with no room found
           roomDetails.push({
-            email,
+            uniqueID,
             error: 'Participant not found'
           });
         }
       } catch (err) {
-        console.error(`Error fetching data for email ${email}:`, err);
+        console.error(`Error fetching data for email ${uniqueID}:`, err);
         roomDetails.push({
-          email,
+          uniqueID,
           error: 'Failed to fetch room details'
         });
       }
