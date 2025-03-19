@@ -113,6 +113,9 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const scannedSchema = new mongoose.Schema({
   uniqueID: { type: String, required: true, unique: true },
+  email: {type: String,required: true,unique: true},
+  name: {type: String, required: true},
+  phoneNumber: {type: String, required: true, unique: true},
   scannedAt: { type: Date, default: Date.now },
 });
 const Scanned = mongoose.model("Scanned", scannedSchema);
@@ -128,6 +131,7 @@ router.post("/verify", async (req, res) => {
       return res.status(400).json({ success: false, message: "QR Code data missing!" });
     }
     const participant = await Participant.findOne({ uniqueID: scannedId }).exec();
+    console.log(participant)
     if (!participant) {
       return res.status(404).json({ success: false, message: "Invalid QR Code!" });
     }
@@ -136,12 +140,30 @@ router.post("/verify", async (req, res) => {
       return res.status(200).json({ success: false, message: "Already Marked Present!" });
     }
     // Save to MongoDB scanned collection (unchanged)
-    await Scanned.create({ uniqueID: scannedId });
+    await Scanned.create({ uniqueID: scannedId, email: participant.email, name: participant.name, phoneNumber: participant.phoneNumber});
 
     res.json({ success: true, message: "Entry Verified!", uniqueId: scannedId });
   } catch (error) {
     console.error("Error verifying QR Code:", error);
     res.status(500).json({ success: false, message: "Server Error! Please try again." });
+  }
+});
+
+
+router.post("/get-scanned", async (req, res) => {
+  try {
+    const { uniqueIDs } = req.body;
+    
+    if (!Array.isArray(uniqueIDs) || uniqueIDs.length === 0) {
+      return res.status(400).json({ error: "Invalid input: uniqueIDs must be a non-empty array." });
+    }
+
+    const scannedRecords = await Scanned.find({ uniqueID: { $in: uniqueIDs } });
+
+    res.status(200).json({ success: true, data: scannedRecords });
+  } catch (error) {
+    console.error("Error fetching scanned records:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

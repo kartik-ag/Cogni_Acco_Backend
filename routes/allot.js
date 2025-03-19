@@ -144,6 +144,58 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 
+// Backend route to get room details for multiple participants by email
+router.post('/participants_rooms', async (req, res) => {
+  try {
+    const { emails } = req.body;
+    
+    // Validate the input
+    if (!emails || !Array.isArray(emails) || emails.length === 0) {
+      return res.status(400).json({ error: 'Valid emails array is required' });
+    }
+    
+    const roomDetails = [];
+    
+    // Process each email to get room details
+    const promises = emails.map(async (email) => {
+      try {
+        console.log(email)
+        const participantDoc = await db.collection('Participants').doc(email).get();
+        
+        if (participantDoc.exists) {
+          const participantData = participantDoc.data();
+          roomDetails.push({
+            email,
+            bhawan_name: participantData.bhawan_name,
+            room_number: participantData.room_number
+          });
+        } else {
+          // Add participant with no room found
+          roomDetails.push({
+            email,
+            error: 'Participant not found'
+          });
+        }
+      } catch (err) {
+        console.error(`Error fetching data for email ${email}:`, err);
+        roomDetails.push({
+          email,
+          error: 'Failed to fetch room details'
+        });
+      }
+    });
+    
+    // Wait for all queries to complete
+    await Promise.all(promises);
+    
+    res.json(roomDetails);
+  } catch (error) {
+    console.error('Error fetching participants room details:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // router.get('/room_details/:bhawanName', async (req, res) => {
 //   try {
 //     const { bhawanName } = req.params;
